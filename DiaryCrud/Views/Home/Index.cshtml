@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "My Daybook";
+}
+
+@model DiaryCrud.Models.WeekInfoDto
+
+
+
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Monday</h2>
+        <ul>
+            @if (Model.Records.TryGetValue(DayOfWeek.Monday, out List<DiaryCrud.Models.Record> records))
+            {
+                foreach (var record in records)
+                {
+
+                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
+                }
+            }
+
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <h2>Tuesday</h2>
+        <ul>
+            @if (Model.Records.TryGetValue(DayOfWeek.Tuesday, out List<DiaryCrud.Models.Record> records2))
+            {
+                foreach (var record in records2)
+                {
+
+                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
+                }
+            }
+        </ul>
+
+    </div>
+    <div class="col-md-4">
+        <h2>Wednesday</h2>
+        <ul>
+            @if (Model.Records.TryGetValue(DayOfWeek.Wednesday, out List<DiaryCrud.Models.Record> records3))
+            {
+                foreach (var record in records3)
+                {
+
+                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
+                }
+            }
+        </ul>
+    </div>
+</div>
