@@ -26,7 +26,30 @@ namespace DiaryCrud.Controllers
             {
                 return View();
             }
+        }
+
+        public async Task<ActionResult> IndexPut(DateOnly date)
+        {
             
+
+            var user = await _applicationUserManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
+            if (user != null)
+            {
+                WeekInfoService.PutInfo(new Record
+                {
+                    Date = date.ToDateTime(TimeOnly.Parse("00:00 PM")),
+                    Text = "sdfgsdfgdfg",
+                    UserId = user.Id,
+                    IsDone = false
+
+                });
+                var weekInfo = new WeekInfoService();
+                return View(weekInfo.GetInfo(user));
+            }
+            else
+            {
+                return View();
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace DiaryCrud.Models
 {
     public class WeekInfoService
     {
-        private ApplicationDbContext _context = new ApplicationDbContext();
+        private static ApplicationDbContext _context = new ApplicationDbContext();
         public WeekInfoDto GetInfo(ApplicationUser user)
         {
             var weekInfo = new WeekInfoDto { CurentDay = DateOnly.FromDateTime(DateTime.Now) };
@@ -15,6 +15,12 @@ namespace DiaryCrud.Models
             var dates = recordsByUser.Select(d => DateOnly.FromDateTime(d.Date).DayOfWeek);
             dates.ForEach(r => weekInfo.Records.Add(r, recordsByUser.Where(d => r.Equals(DateOnly.FromDateTime(d.Date).DayOfWeek)).ToList()));
             return weekInfo;
+        }
+
+        public static void PutInfo(Record record)
+        {
+            _context.Records.Add(record);
+            _context.SaveChanges();
         }
     }
     public class WeekInfoDto
