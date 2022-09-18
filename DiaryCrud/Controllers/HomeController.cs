@@ -1,9 +1,8 @@
 ﻿using DiaryCrud.Models;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -28,27 +27,74 @@ namespace DiaryCrud.Controllers
             }
         }
 
-        public async Task<ActionResult> IndexPut(DateOnly date)
+        [HttpPost]
+        public async Task<ActionResult> AddRecord(FormCollection fc)
         {
-            
-
             var user = await _applicationUserManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
             if (user != null)
             {
-                WeekInfoService.PutInfo(new Record
-                {
-                    Date = date.ToDateTime(TimeOnly.Parse("00:00 PM")),
-                    Text = "sdfgsdfgdfg",
-                    UserId = user.Id,
-                    IsDone = false
-
-                });
                 var weekInfo = new WeekInfoService();
-                return View(weekInfo.GetInfo(user));
+                if (!fc["Text"].IsNullOrWhiteSpace())
+                {
+                    weekInfo.AddRecord(new Record
+                    {
+                        Date = DateTime.Parse(fc["Date"]),
+                        Text = fc["Text"],
+                        UserId = user.Id,
+                        IsDone = false
+                    });
+                }
+                return View("Index", weekInfo.GetInfo(user));
             }
             else
             {
-                return View();
+                return View("Index");
+            }
+        }
+
+        public async Task<ActionResult> DeleteRecord(int id)
+        {
+            var user = await _applicationUserManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
+            if (user != null)
+            {
+                var weekInfo = new WeekInfoService();
+                weekInfo.DeleteRecord(id);
+                return View("Index", weekInfo.GetInfo(user));
+            }
+            else
+            {
+                return View("Index");
+            }
+        }
+
+        public async Task<ActionResult> ChangeRecordsState(int id)
+        {
+            var user = await _applicationUserManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
+            if (user != null)
+            {
+                var weekInfo = new WeekInfoService();
+                weekInfo.ChangeRecordsState(id);
+                return View("Index", weekInfo.GetInfo(user));
+            }
+            else
+            {
+                return View("Index");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ChangeRecordsText(FormCollection fc)
+        {
+            var user = await _applicationUserManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
+            if (user != null)
+            {
+                var weekInfo = new WeekInfoService();
+                weekInfo.ChangeRecordsText(Int32.Parse(fc["Id"]), fc["RText"]);
+                return View("Index", weekInfo.GetInfo(user));
+            }
+            else
+            {
+                return View("Index");
             }
         }
     }

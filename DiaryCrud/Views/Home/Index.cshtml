@@ -10,111 +10,36 @@
 
 <div class="row">
     <div class="col-md-4">
-        <h2>Monday</h2>
-        <ul>
-            @if (Model.Records.TryGetValue(DayOfWeek.Monday, out List<DiaryCrud.Models.Record> records))
-            {
-                foreach (var record in records)
+        @foreach (var date in Model.Records.Keys)
+        {
+            <h3>@date.DayOfWeek - @date.Date</h3>
+            <ul>
+                @if (Model.Records.TryGetValue(date, out List<DiaryCrud.Models.Record> records))
                 {
+                    foreach (var record in records)
+                    {
 
-                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
-                    <br />
+                        <li>
+                            @using (Html.BeginForm("ChangeRecordsText", "Home", FormMethod.Post))
+                            {
+                            @Html.TextBox("RText", record.Text)
+                            @Html.Hidden("Id", $"{record.Id}")
+                            <input type="image" src="~/img/pencil.png" alt="Submit feedback" height="18px">
+                            }
+                              --  @record.IsDone
+                            <a href="@Url.Action($"ChangeRecordsState/{record.Id}", "Home")"><img src="~/img/check.png" height="18px" /></a>
+                            <a href="@Url.Action($"DeleteRecord/{record.Id}", "Home")"><img src="~/img/trash-bin.png" height="18px" /></a>
+                        </li>
+                        <br />
+                    }
+                    using (Html.BeginForm("AddRecord", "Home", FormMethod.Post))
+                    {
+                        @Html.TextBox("Text")
+                        @Html.Hidden("Date", $"{date}")
+                        <input type="image" src="~/img/plus.png" alt="Submit feedback" height="18px">
+                    }
                 }
-                <input id="recordText" name="recordText" type="text" value="" />
-                <a href="location.href='@Url.Action("IndexPut", "Home", new { date = Model.CurentDay}, null)'"><img width="20px" src="~/img/plus.png" /></a>
-            }
-
-        </ul>
-    </div>
-    <div class="col-md-4">
-        <h2>Tuesday</h2>
-        <ul>
-            @if (Model.Records.TryGetValue(DayOfWeek.Tuesday, out List<DiaryCrud.Models.Record> records2))
-            {
-                foreach (var record in records2)
-                {
-
-                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
-                }
-            }
-        </ul>
-
-    </div>
-    <div class="col-md-4">
-        <h2>Wednesday</h2>
-        <ul>
-            @if (Model.Records.TryGetValue(DayOfWeek.Wednesday, out List<DiaryCrud.Models.Record> records3))
-            {
-                foreach (var record in records3)
-                {
-
-                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
-                }
-            }
-        </ul>
-    </div>
-</div>
-
-<hr />
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Thursday</h2>
-        <ul>
-            @if (Model.Records.TryGetValue(DayOfWeek.Thursday, out List<DiaryCrud.Models.Record> records4))
-            {
-                foreach (var record in records)
-                {
-
-                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
-                }
-            }
-
-        </ul>
-    </div>
-    <div class="col-md-4">
-        <h2>Friday</h2>
-        <ul>
-            @if (Model.Records.TryGetValue(DayOfWeek.Friday, out List<DiaryCrud.Models.Record> records5))
-            {
-                foreach (var record in records2)
-                {
-
-                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
-                }
-            }
-        </ul>
-
-    </div>
-    <div class="col-md-4">
-        <h2>Saturday</h2>
-        <ul>
-            @if (Model.Records.TryGetValue(DayOfWeek.Saturday, out List<DiaryCrud.Models.Record> records6))
-            {
-                foreach (var record in records3)
-                {
-
-                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
-                }
-            }
-        </ul>
-    </div>
-</div>
-
-<hr />
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Sunday</h2>
-        <ul>
-            @if (Model.Records.TryGetValue(DayOfWeek.Sunday, out List<DiaryCrud.Models.Record> records7))
-            {
-                foreach (var record in records)
-                {
-
-                    <li>@record.Text -- @record.IsDone -- @record.UserId</li>
-                }
-            }
-        </ul>
+            </ul>
+        }
     </div>
 </div>

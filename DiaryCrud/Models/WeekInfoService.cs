@@ -1,31 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using WebGrease.Css.Extensions;
 
 namespace DiaryCrud.Models
 {
     public class WeekInfoService
     {
-        private static ApplicationDbContext _context = new ApplicationDbContext();
+        private ApplicationDbContext _context = new ApplicationDbContext();
         public WeekInfoDto GetInfo(ApplicationUser user)
         {
             var weekInfo = new WeekInfoDto { CurentDay = DateOnly.FromDateTime(DateTime.Now) };
+            var currentDates = DateTime.Now.DatesOfCurrentWeek();
             var recordsByUser = _context.Records.AsQueryable().Where(r => r.UserId.Equals(user.Id)).ToList();
-            var dates = recordsByUser.Select(d => DateOnly.FromDateTime(d.Date).DayOfWeek);
-            dates.ForEach(r => weekInfo.Records.Add(r, recordsByUser.Where(d => r.Equals(DateOnly.FromDateTime(d.Date).DayOfWeek)).ToList()));
+            currentDates.ForEach(dts => weekInfo.Records.Add(dts, recordsByUser.Where(r => r.Date.Equals(dts)).ToList()));
             return weekInfo;
         }
 
-        public static void PutInfo(Record record)
+        public void AddRecord(Record record)
         {
             _context.Records.Add(record);
             _context.SaveChanges();
+        }
+
+        public void DeleteRecord(int id)
+        {
+            _context.Records.Remove(_context.Records.Find(id));
+            _context.SaveChanges();
+        }
+        
+        public void ChangeRecordsState(int id)
+        {
+            var record = _context.Records.SingleOrDefault(b => b.Id == id);
+            if (record != null)
+            {
+                record.IsDone = !record.IsDone;
+                _context.SaveChanges();
+            }
+
+        }
+
+        public void ChangeRecordsText(int id, string text)
+        {
+            var record = _context.Records.SingleOrDefault(b => b.Id == id);
+            if (record != null)
+            {
+                record.Text = text;
+                _context.SaveChanges();
+            }
+
         }
     }
     public class WeekInfoDto
     {
         public DateOnly CurentDay { get; set; }
-        public Dictionary<DayOfWeek, List<Record>> Records { get; set; } = new Dictionary<DayOfWeek, List<Record>>();
+        public Dictionary<DateTime, List<Record>> Records { get; set; } = new Dictionary<DateTime, List<Record>>();
     }
 }
